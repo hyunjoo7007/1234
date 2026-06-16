@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코코의 하루 · Coco's Little Day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Jua&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fdf6ef;
+    --cream-deep:#f6e8db;
+    --bear:#c08552;
+    --bear-soft:#d9a36b;
+    --blush:#f3b9bd;
+    --blush-deep:#e98a90;
+    --pink-cup:#f6c9d3;
+    --mint:#bfe0c6;
+    --cloud:#cfe4f2;
+    --ink:#6b4a32;
+    --ink-soft:#9c7a5e;
+    --gold:#f4cf6b;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Quicksand',sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    overflow-x:hidden;
+  }
+
+  /* soft dotted paper texture */
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background-image:radial-gradient(var(--cream-deep) 1.1px, transparent 1.1px);
+    background-size:22px 22px;
+    opacity:.6;z-index:-2;pointer-events:none;
+  }
+
+  /* ---------- progress ---------- */
+  .progress-track{
+    position:fixed;top:0;left:0;right:0;height:5px;
+    background:var(--cream-deep);z-index:50;
+  }
+  .progress-bar{
+    height:100%;width:0;
+    background:linear-gradient(90deg,var(--blush),var(--gold));
+    transition:width .15s ease-out;
+  }
+
+  /* paw nav */
+  .paw-nav{
+    position:fixed;right:18px;top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:13px;z-index:40;
+  }
+  .paw-dot{
+    width:13px;height:13px;border-radius:50%;
+    background:var(--cream-deep);border:2px solid var(--bear-soft);
+    cursor:pointer;transition:.25s;position:relative;
+  }
+  .paw-dot:hover{transform:scale(1.3);}
+  .paw-dot.active{background:var(--blush-deep);border-color:var(--blush-deep);transform:scale(1.25);}
+  @media(max-width:680px){.paw-nav{display:none;}}
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:100vh;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding:40px 20px;position:relative;
+  }
+  .hero .eyebrow{
+    font-family:'Quicksand';font-weight:700;letter-spacing:.4em;
+    text-transform:uppercase;font-size:.72rem;color:var(--blush-deep);
+    margin-bottom:14px;
+  }
+  .hero h1{
+    font-family:'Jua';font-size:clamp(3rem,12vw,6.5rem);
+    color:var(--bear);line-height:.95;
+    text-shadow:3px 3px 0 var(--cream-deep);
+  }
+  .hero .sub{
+    font-family:'Gaegu';font-size:clamp(1.1rem,4vw,1.6rem);
+    color:var(--ink-soft);margin-top:18px;
+  }
+  .hero-bear{font-size:clamp(5rem,22vw,10rem);margin-bottom:8px;animation:bob 3.4s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-16px) rotate(2deg);}}
+
+  .scroll-hint{
+    margin-top:46px;font-family:'Gaegu';color:var(--ink-soft);
+    font-size:1.05rem;display:flex;flex-direction:column;align-items:center;gap:6px;
+    animation:fade 2.5s ease-in-out infinite;
+  }
+  .scroll-hint span{font-size:1.5rem;}
+  @keyframes fade{0%,100%{opacity:.4;transform:translateY(0);}50%{opacity:1;transform:translateY(6px);}}
+
+  /* floating hearts in hero */
+  .float{position:absolute;opacity:.5;animation:drift 9s linear infinite;}
+  @keyframes drift{0%{transform:translateY(0) rotate(0);}100%{transform:translateY(-120vh) rotate(40deg);}}
+
+  /* ---------- scenes ---------- */
+  .scene{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    padding:80px 24px;
+  }
+  .card{
+    max-width:760px;width:100%;
+    display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;
+    background:#fff;border-radius:36px;
+    padding:46px;
+    box-shadow:0 22px 50px -28px rgba(107,74,50,.4);
+    border:3px solid var(--cream-deep);
+    opacity:0;transform:translateY(40px) scale(.97);
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .card.in{opacity:1;transform:translateY(0) scale(1);}
+  .scene:nth-child(even) .card{grid-template-columns:1fr 1fr;}
+  .scene:nth-child(even) .card .art{order:2;}
+  @media(max-width:680px){
+    .card{grid-template-columns:1fr;text-align:center;padding:34px 26px;gap:18px;}
+    .scene:nth-child(even) .card .art{order:0;}
+  }
+
+  .art{
+    aspect-ratio:1;border-radius:28px;display:flex;align-items:center;justify-content:center;
+    font-size:clamp(5rem,16vw,8.5rem);position:relative;overflow:hidden;
+  }
+  .art .emo{position:relative;z-index:2;animation:bob 4s ease-in-out infinite;}
+  /* small twinkle stars layered in art */
+  .art .twinkle{position:absolute;font-size:1.4rem;z-index:1;animation:tw 2.6s ease-in-out infinite;}
+  @keyframes tw{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.15);}}
+
+  .chapter-no{
+    font-family:'Quicksand';font-weight:700;font-size:.8rem;letter-spacing:.25em;
+    color:var(--blush-deep);text-transform:uppercase;margin-bottom:10px;
+  }
+  .copy h2{
+    font-family:'Jua';font-size:clamp(1.7rem,5vw,2.4rem);color:var(--bear);
+    line-height:1.15;margin-bottom:14px;
+  }
+  .copy p{
+    font-family:'Gaegu';font-size:clamp(1.1rem,3.6vw,1.35rem);
+    color:var(--ink-soft);line-height:1.5;
+  }
+  .copy .tag{
+    display:inline-block;margin-top:18px;font-family:'Gaegu';font-size:1rem;
+    background:var(--cream);color:var(--ink);
+    padding:6px 16px;border-radius:50px;border:2px dashed var(--bear-soft);
+  }
+
+  /* art color themes */
+  .t-pink{background:linear-gradient(140deg,#fde4ea,#f6c9d3);}
+  .t-mint{background:linear-gradient(140deg,#e3f4e7,#bfe0c6);}
+  .t-cloud{background:linear-gradient(140deg,#e6f1fa,#cfe4f2);}
+  .t-cream{background:linear-gradient(140deg,#fdf2e6,#f6e2cd);}
+  .t-blush{background:linear-gradient(140deg,#fbe7e3,#f3c4bd);}
+  .t-gold{background:linear-gradient(140deg,#fdf1d6,#f4dd9d);}
+
+  /* ---------- goods grid ---------- */
+  .goods{padding:90px 24px;text-align:center;}
+  .goods .lead-no{font-family:'Quicksand';font-weight:700;letter-spacing:.3em;color:var(--blush-deep);font-size:.78rem;text-transform:uppercase;}
+  .goods h2{font-family:'Jua';font-size:clamp(2rem,7vw,3rem);color:var(--bear);margin:10px 0 8px;}
+  .goods .desc{font-family:'Gaegu';font-size:1.25rem;color:var(--ink-soft);margin-bottom:42px;}
+  .grid{
+    max-width:880px;margin:0 auto;display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:22px;
+  }
+  .good{
+    background:#fff;border-radius:26px;padding:28px 20px;
+    border:3px solid var(--cream-deep);
+    box-shadow:0 16px 34px -26px rgba(107,74,50,.45);
+    cursor:pointer;transition:.3s;
+  }
+  .good:hover{transform:translateY(-8px) rotate(-1.5deg);box-shadow:0 26px 44px -24px rgba(233,138,144,.5);border-color:var(--blush);}
+  .good .ico{font-size:3.4rem;display:block;margin-bottom:14px;transition:.3s;}
+  .good:hover .ico{transform:scale(1.18) rotate(8deg);}
+  .good h3{font-family:'Jua';font-size:1.2rem;color:var(--bear);margin-bottom:6px;}
+  .good p{font-family:'Gaegu';font-size:1rem;color:var(--ink-soft);line-height:1.4;}
+  .good .price{display:inline-block;margin-top:12px;font-family:'Quicksand';font-weight:700;color:var(--blush-deep);font-size:.95rem;}
+
+  /* ---------- outro ---------- */
+  .outro{
+    min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:80px 24px;
+  }
+  .outro .bear-wave{font-size:clamp(5rem,18vw,8rem);animation:wave 2.2s ease-in-out infinite;}
+  @keyframes wave{0%,100%{transform:rotate(-6deg);}50%{transform:rotate(8deg);}}
+  .outro h2{font-family:'Jua';font-size:clamp(2rem,7vw,3.2rem);color:var(--bear);margin:14px 0;}
+  .outro p{font-family:'Gaegu';font-size:1.3rem;color:var(--ink-soft);max-width:420px;line-height:1.5;}
+  .cta{
+    margin-top:30px;font-family:'Jua';font-size:1.15rem;color:#fff;
+    background:linear-gradient(135deg,var(--blush-deep),var(--gold));
+    border:none;padding:16px 38px;border-radius:50px;cursor:pointer;
+    box-shadow:0 14px 28px -12px rgba(233,138,144,.7);transition:.25s;
+  }
+  .cta:hover{transform:translateY(-3px) scale(1.04);}
+  .footer{margin-top:50px;font-family:'Gaegu';color:var(--ink-soft);font-size:.95rem;}
+
+  /* heart burst when clicking goods */
+  .burst{position:fixed;pointer-events:none;font-size:1.4rem;z-index:99;animation:burst .9s ease-out forwards;}
+  @keyframes burst{0%{opacity:1;transform:transl(0,0) scale(.5);}100%{opacity:0;transform:translateY(-80px) scale(1.4);}}
+</style>
+</head>
+<body>
+
+<div class="progress-track"><div class="progress-bar" id="bar"></div></div>
+<nav class="paw-nav" id="pawNav"></nav>
+
+<!-- HERO -->
+<header class="hero" id="sec-0">
+  <div class="hero-bear">🧸</div>
+  <p class="eyebrow">A Cute Bear Story</p>
+  <h1>코코의 하루</h1>
+  <p class="sub">작은 곰돌이 코코의 폭신폭신한 하루를 따라가 보세요</p>
+  <div class="scroll-hint"><span>🐾</span>아래로 스크롤</div>
+</header>
+
+<!-- SCENES injected by JS -->
+<main id="scenes"></main>
+
+<!-- GOODS -->
+<section class="goods" id="sec-goods">
+  <p class="lead-no">Coco's Goods</p>
+  <h2>코코를 데려가세요</h2>
+  <p class="desc">하루 속 장면들이 그대로 굿즈가 되었어요 🍯</p>
+  <div class="grid" id="goodsGrid"></div>
+</section>
+
+<!-- OUTRO -->
+<section class="outro" id="sec-outro">
+  <div class="bear-wave">🐻</div>
+  <h2>오늘도 폭신한 하루 되세요</h2>
+  <p>코코는 내일도 작은 행복을 모으러 다닐 거예요. 또 놀러 와 주세요!</p>
+  <button class="cta" onclick="window.scrollTo({top:0,behavior:'smooth'})">처음으로 🍓</button>
+  <div class="footer">made with 🤎 · 코코의 하루</div>
+</section>
+
+<script>
+/* ---------- story data (each = one sticker bear) ---------- */
+const scenes = [
+  {no:"아침 · 01", emo:"☀️🐻", theme:"t-gold",  twinkle:["✨","⭐"],
+   title:"안녕, 좋은 아침!", body:"리본을 단 코코가 기지개를 켜요. 오늘은 어떤 즐거운 일이 기다리고 있을까요?", tag:"🎀 잠꾸러기 코코"},
+  {no:"아침 · 02", emo:"☕🐻", theme:"t-pink",  twinkle:["💗","✨"],
+   title:"따끈한 코코아 한 잔", body:"분홍 컵 속에 쏙 들어간 코코. 김이 모락모락, 마음까지 따뜻해져요.", tag:"☕ 컵 속 곰돌이"},
+  {no:"낮 · 03", emo:"💌🐻", theme:"t-blush", twinkle:["💕","💌"],
+   title:"누군가에게 편지를", body:"\"보고 싶어\" 한 줄을 적었어요. 작은 마음이 봉투에 담겨 멀리 날아가요.", tag:"💌 편지 쓰는 코코"},
+  {no:"낮 · 04", emo:"📷🐻", theme:"t-mint",  twinkle:["⭐","✨"],
+   title:"찰칵, 오늘을 기록", body:"예쁜 순간은 그냥 지나치지 않아요. 코코의 사진첩이 하루하루 채워져요.", tag:"📷 사진가 코코"},
+  {no:"오후 · 05", emo:"🍩🐻", theme:"t-pink",  twinkle:["🍩","💗"],
+   title:"달콤한 간식 시간", body:"제일 좋아하는 딸기 도넛! 한 입 베어 물면 세상이 다 달콤해져요.", tag:"🍩 간식 요정"},
+  {no:"오후 · 06", emo:"📖🐻", theme:"t-cloud", twinkle:["📖","✨"],
+   title:"조용한 책 한 권", body:"포근한 자리에 앉아 책장을 넘겨요. 이야기 속으로 폴짝 빠져드는 시간.", tag:"📖 독서가 코코"},
+  {no:"오후 · 07", emo:"🪴🐻", theme:"t-mint",  twinkle:["🌱","💚"],
+   title:"작은 화분 돌보기", body:"\"무럭무럭 자라렴.\" 코코의 다정한 인사에 새싹이 방긋 웃어요.", tag:"🪴 식물 친구"},
+  {no:"저녁 · 08", emo:"💭🐻", theme:"t-cloud", twinkle:["💭","⭐"],
+   title:"오늘을 떠올리며", body:"몽글몽글 생각풍선 속엔 행복한 장면들이 가득. 참 좋은 하루였어요.", tag:"💭 생각하는 코코"},
+  {no:"저녁 · 09", emo:"⛅🐻", theme:"t-cloud", twinkle:["☁️","✨"],
+   title:"구름 위 낮잠", body:"폭신한 구름에 기대어 살짝 쉬어가요. 발끝까지 노곤노곤 녹아내려요.", tag:"⛅ 구름 곰돌이"},
+  {no:"밤 · 10", emo:"🌙🐻", theme:"t-blush", twinkle:["💤","⭐"],
+   title:"잘 자요, 코코", body:"분홍 이불을 덮고 새근새근. 좋은 꿈 속에서 또 만나요. 안녕히 주무세요.", tag:"🌙 꿈나라 코코"}
+];
+
+/* ---------- goods data ---------- */
+const goods = [
+  {ico:"🎀", name:"리본 스티커팩", desc:"코코의 표정 10종 세트", price:"₩4,500"},
+  {ico:"☕", name:"코코아 그립톡", desc:"컵 속 곰돌이 디자인", price:"₩9,900"},
+  {ico:"📷", name:"포토 키링", desc:"찰칵! 미니 카메라 코코", price:"₩7,500"},
+  {ico:"🍩", name:"도넛 마그넷", desc:"달콤 딸기 도넛 자석", price:"₩3,900"},
+  {ico:"📖", name:"독서 책갈피", desc:"책 읽는 코코 메탈 북마크", price:"₩5,500"},
+  {ico:"⛅", name:"구름 미니쿠션", desc:"폭신폭신 인형 쿠션", price:"₩18,000"},
+  {ico:"🌙", name:"굿나잇 안대", desc:"꿈나라 코코 수면안대", price:"₩8,900"},
+  {ico:"💌", name:"편지지 세트", desc:"코코의 손편지 레터셋", price:"₩6,500"}
+];
+
+/* ---------- build scenes ---------- */
+const sceneWrap = document.getElementById('scenes');
+scenes.forEach((s,i)=>{
+  const sec=document.createElement('section');
+  sec.className='scene';sec.id='sec-'+(i+1);
+  sec.innerHTML=`
+    <div class="card">
+      <div class="art ${s.theme}">
+        <span class="twinkle" style="top:14%;left:16%">${s.twinkle[0]}</span>
+        <span class="twinkle" style="bottom:18%;right:18%;animation-delay:1.1s">${s.twinkle[1]}</span>
+        <span class="emo">${s.emo}</span>
+      </div>
+      <div class="copy">
+        <div class="chapter-no">${s.no}</div>
+        <h2>${s.title}</h2>
+        <p>${s.body}</p>
+        <span class="tag">${s.tag}</span>
+      </div>
+    </div>`;
+  sceneWrap.appendChild(sec);
+});
+
+/* ---------- build goods ---------- */
+const grid=document.getElementById('goodsGrid');
+goods.forEach(g=>{
+  const d=document.createElement('div');
+  d.className='good';
+  d.innerHTML=`<span class="ico">${g.ico}</span><h3>${g.name}</h3><p>${g.desc}</p><span class="price">${g.price}</span>`;
+  d.addEventListener('click',e=>heartBurst(e.clientX,e.clientY));
+  grid.appendChild(d);
+});
+
+/* ---------- reveal on scroll ---------- */
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{if(en.isIntersecting)en.target.classList.add('in');});
+},{threshold:.25});
+document.querySelectorAll('.card').forEach(c=>io.observe(c));
+
+/* ---------- paw nav ---------- */
+const sectionIds=['sec-0',...scenes.map((_,i)=>'sec-'+(i+1)),'sec-goods','sec-outro'];
+const pawNav=document.getElementById('pawNav');
+sectionIds.forEach(id=>{
+  const dot=document.createElement('div');
+  dot.className='paw-dot';dot.title=id;
+  dot.onclick=()=>document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  pawNav.appendChild(dot);
+});
+const dots=[...pawNav.children];
+
+/* ---------- progress + active dot ---------- */
+function onScroll(){
+  const h=document.documentElement;
+  const pct=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+  document.getElementById('bar').style.width=pct+'%';
+  let active=0;
+  sectionIds.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el && el.getBoundingClientRect().top<=window.innerHeight*0.5)active=i;
+  });
+  dots.forEach((d,i)=>d.classList.toggle('active',i===active));
+}
+window.addEventListener('scroll',onScroll);onScroll();
+
+/* ---------- hero floating hearts ---------- */
+const hearts=['🤎','💗','✨','🍯','⭐'];
+const hero=document.getElementById('sec-0');
+setInterval(()=>{
+  const f=document.createElement('div');
+  f.className='float';f.textContent=hearts[Math.floor(Math.random()*hearts.length)];
+  f.style.left=Math.random()*100+'%';f.style.bottom='-40px';
+  f.style.fontSize=(1+Math.random()*1.6)+'rem';
+  f.style.animationDuration=(7+Math.random()*5)+'s';
+  hero.appendChild(f);
+  setTimeout(()=>f.remove(),12000);
+},900);
+
+/* ---------- heart burst ---------- */
+function heartBurst(x,y){
+  const set=['🤎','💗','⭐','✨','🍯'];
+  for(let i=0;i<6;i++){
+    const b=document.createElement('div');
+    b.className='burst';b.textContent=set[Math.floor(Math.random()*set.length)];
+    b.style.left=x+(Math.random()*60-30)+'px';
+    b.style.top=y+'px';
+    document.body.appendChild(b);
+    setTimeout(()=>b.remove(),900);
+  }
+}
+</script>
+</body>
+</html>
